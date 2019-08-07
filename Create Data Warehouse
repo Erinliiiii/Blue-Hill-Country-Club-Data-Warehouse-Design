@@ -1,0 +1,50 @@
+DROP TABLE revenue;
+CREATE TABLE revenue AS
+SELECT Member_Number, SUM(Pool) AS Pool, SUM(Golf) AS Golf, SUM(Tennis) AS Tennis,
+SUM(Dining) AS Dining, SUM(Other) AS Other
+FROM
+(
+SELECT Member_Number, Total AS Dining, 0 AS Golf, 0 AS Pool, 0 AS Tennis, 0 AS Other
+FROM dining
+UNION ALL
+SELECT Member_Number, 0 AS Dining, Amount AS Golf, 0 AS Pool, 0 AS Tennis, 0 AS Other
+FROM Golf
+UNION ALL
+SELECT Member_Number, 0 AS Dining, 0 AS Golf, Amount AS Pool, 0 AS Tennis, 0 AS Other
+FROM Pool
+UNION ALL
+SELECT Member_Number, 0 AS Dining, 0 AS Golf, 0 AS Pool, Amount AS Tennis, 0 AS Other
+FROM Tennis
+UNION ALL
+SELECT Member_Number, 0 AS Dining, 0 AS Golf, 0 AS Pool, 0 AS Tennis, Amount AS Other
+FROM Other
+) AS members
+GROUP BY Member_Number
+;
+
+SELECT memberships.member_number, membership_type,
+(2019 - Year_Joined) AS Years,
+COALESCE(Number_Family, 0) AS Number_Family,
+COALESCE(Number_Children,0) AS Number_Children,
+Pool, Golf, Tennis, Dining, Other,
+CASE WHEN promoone.Member_Number IS NULL THEN 0 ELSE 1 END AS PromoOne,
+CASE WHEN promotwo.Member_Number IS NULL THEN 0 ELSE 1 END AS PromoTwo,
+COALESCE(`Private Function`,0) AS Private_Function,
+COALESCE(`4th of July`,0) AS July_Fourth,
+COALESCE(Thanksgiving,0) AS Thanksgiving,
+COALESCE(`Easter Brunch`,0) AS Easter_Brunch
+FROM memberships
+LEFT JOIN revenue ON memberships.Member_Number = revenue.Member_Number
+LEFT JOIN promoone ON memberships.Member_Number = promoone.Member_Number
+LEFT JOIN promotwo ON memberships.Member_Number = promotwo.Member_Number
+LEFT JOIN special ON memberships.Member_Number = special.Member_Number
+LEFT JOIN (SELECT Member_Number, COUNT(*) AS Number_Family
+FROM members
+GROUP BY Member_Number) AS family
+ON memberships.Member_Number = family.Member_Number
+LEFT JOIN ( SELECT Member_Number, COUNT(*) AS Number_Children
+FROM members
+WHERE Relationship_to_Member = "Child"
+GROUP BY Member_Number) AS children
+ON memberships.Member_Number = children.Member_Number
+ORDER BY memberships.Member_Number;
