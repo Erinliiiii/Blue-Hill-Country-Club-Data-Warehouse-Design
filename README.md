@@ -1,5 +1,6 @@
-# Blue-Hill-Country-Club-Data-Warehouse-Design/
-## Step 1: Created database which contains the 10 tables summarized below, with transactional data related to one year of operations of xxx Country Club.
+# Blue-Hill-Country-Club-Data-Warehouse-Design
+## Step 1: Created database 
+Create database which contains the 10 tables summarized below, with transactional data related to one year of operations of xxx Country Club./
 **Membership data tables:**
 memberships - one record per membership
 members - one record per person (multiple family members can be included on the same membership account)
