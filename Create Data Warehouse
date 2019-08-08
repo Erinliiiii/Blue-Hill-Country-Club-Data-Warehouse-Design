@@ -48,3 +48,15 @@ WHERE Relationship_to_Member = "Child"
 GROUP BY Member_Number) AS children
 ON memberships.Member_Number = children.Member_Number
 ORDER BY memberships.Member_Number;
+
+
+SELECT number_children, avg(dining)
+FROM dw
+GROUP BY number_children
+ORDER BY number_children;
+/* Couples with no child tend to spend more money on dining */
+
+SELECT years, avg(Pool), AVG(Pool), AVG(Golf), AVG(Dining)
+FROM dw
+GROUP BY years
+ORDER BY years;
